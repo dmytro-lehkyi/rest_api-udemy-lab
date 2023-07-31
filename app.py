@@ -1,6 +1,8 @@
 import os
 from flask import Flask, jsonify
 from flask_smorest import Api
+from flask_migrate import Migrate
+
 from  flask_jwt_extended import JWTManager
 from resources.item import  blp as ItemBlueprint
 from resources.store import  blp as StoreBlueprint
@@ -9,6 +11,7 @@ from resources.user import  blp as UserBlueprint
 from db import db
 import models
 from blocklist import BLOCKLIST
+from dotenv import load_dotenv
 
 def create_app(db_url = None):
     app = configure_flask_app()
@@ -19,6 +22,7 @@ def create_app(db_url = None):
 
 def configure_flask_app():
     app = Flask(__name__)
+    load_dotenv()
     app.config["PROPAGATE_EXCEPTIONS"] = True
     app.config["API_TITLE"] = "Stores REST API"
     app.config["API_VERSION"] = "v1"
@@ -32,8 +36,7 @@ def configure_flask_app():
 def configure_sqlalchemy(app, db_url):
     app.config["SQLALCHEMY_DATABASE_URI"] = db_url or os.getenv("DATABASE_URL", "sqlite:///data.db")
     db.init_app(app)
-    with app.app_context():
-        db.create_all()
+    migrate = Migrate(app, db)
         
 def configure_api(app):
     api = Api(app)
