@@ -1,5 +1,6 @@
 flask
 flask-smorest
+flask_migrate
 python-dotenv
 sqlalchemy
 flask-sqlalchemy
